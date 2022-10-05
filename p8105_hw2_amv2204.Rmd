@@ -13,6 +13,7 @@ We'll start by having a code chunk in the beginning that loads all the packages 
 
 ```{r prep}
 library (tidyverse)
+library(readxl)
 ```
 
 ## Problem 1:
@@ -20,16 +21,35 @@ library (tidyverse)
 We will start by reading in the datafile using the `readr` function from the `tidyverse` package and cleaning the data by using the `clean_names` function from the `janitor` package. We will also retain certain variables and convert the entry variable from a character variable to a logical variable. 
 
 ```{r subway}
-subway = read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") 
-    subway = janitor::clean_names(subway)
-    col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")
-    select(subway,
+subway = read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+    janitor::clean_names() %>% 
+    select( 
       line, station_name, station_latitude, station_longitude, 
-      starts_with("route"), entry, exit_only, vending, entrance_type, ada)
-    mutate(subway, entry = ifelse(entry == "YES", TRUE, FALSE))
+      starts_with("route"), entry, exit_only, vending, entrance_type, ada) %>% 
+    mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
 subway
 ```
 
+
+## Problem 2:
+
+Let's start by reading and cleaning the Mr. Trash Wheel and Professor Trash Wheel datasets. 
+
+```{r Trashwheel}
+trash = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = as.integer(round(sports_balls))) %>% 
+  mutate(ID = "A")
+```
+
+
+```{r Professor}
+professor = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(ID = "B")
+```
 
 
 
