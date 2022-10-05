@@ -64,5 +64,23 @@ To find the total weight of trash collected by Professor Trash Wheel, we can use
 
 To find the total number of sports balls collected by Mr. Trash Wheel, we can use the following code: `sum(subset(combo, ID == "A")$sports_balls)`, which gives us the sum of the _sports_balls_ variable restricted to the observations from the **Trash** dataset, identified by _ID = A_. The answer is 6877 sports balls.
 
+## Problem 3:
+
+Clean up the pols-month file:
+
+```{r pols}
+pols = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+    janitor::clean_names() %>% 
+    separate(mon, sep = "-", into = c("year", "month", "day")) %>%
+    mutate(month = month.name[as.numeric(month)]) %>% 
+    mutate(president = case_when(prez_gop == 1 ~ "gop", TRUE ~ "dem")) %>% 
+    select(-day, -prez_gop, -prez_dem)
+```
+
+
+
+
+
+
 
 
