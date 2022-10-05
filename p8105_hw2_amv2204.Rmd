@@ -60,5 +60,9 @@ combo = merge(x = trash, y = professor, all = TRUE) %>%
 
 The new and combined dataset has 641 observations `nrow(combo)` and 15 variables `ncol(combo)`. All the variables exist both sets except for the _sports_balls_ variable; it came from the **trash** dataset. We can distinguish which observation is from which dataset by the _ID_ variable; an _ID_ value equal to A is for the **trash** dataset and an _ID_ value of B is for the **professor** dataset. 
 
+To find the total weight of trash collected by Professor Trash Wheel, we can use the following code: `sum(subset(combo, ID == "B")$weight_tons)`, which gives us the sum of the _weight_tons_ variable restricted to the observations from the **Professor** dataset, identified by _ID = B_. The answer is 190.12 tons.
+
+To find the total number of sports balls collected by Mr. Trash Wheel, we can use the following code: `sum(subset(combo, ID == "A")$sports_balls)`, which gives us the sum of the _sports_balls_ variable restricted to the observations from the **Trash** dataset, identified by _ID = A_. The answer is 6877 sports balls.
+
 
 
