@@ -51,6 +51,11 @@ professor = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Profe
   mutate(ID = "B")
 ```
 
+Next we will combine both datasets into one dataset.
+
+```{r combo}
+combo = merge(x = trash, y = professor, by = 'ID', all = TRUE)
+```
 
 
 
