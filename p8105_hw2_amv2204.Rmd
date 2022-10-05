@@ -54,9 +54,11 @@ professor = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Profe
 Next we will combine both datasets into one dataset.
 
 ```{r combo}
-combo = merge(x = trash, y = professor, by = 'ID', all = TRUE)
+combo = merge(x = trash, y = professor, all = TRUE) %>% 
+  select(ID, everything())
 ```
 
+The new and combined dataset has 641 observations `nrow(combo)` and 15 variables `ncol(combo)`. All the variables exist both sets except for the _sports_balls_ variable; it came from the **trash** dataset. We can distinguish which observation is from which dataset by the _ID_ variable; an _ID_ value equal to A is for the **trash** dataset and an _ID_ value of B is for the **professor** dataset. 
 
 
 
