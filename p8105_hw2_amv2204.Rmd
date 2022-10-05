@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Prep:
+## Preparation:
 
 We'll start by having a code chunk in the beginning that loads all the packages we will need for this homework.
 
@@ -16,6 +16,7 @@ library (tidyverse)
 library(readxl)
 ```
 
+
 ## Problem 1:
 
 We will start by reading in the datafile using the `readr` function from the `tidyverse` package and cleaning the data by using the `clean_names` function from the `janitor` package. We will also retain certain variables and convert the entry variable from a character variable to a logical variable. 
@@ -23,16 +24,73 @@ We will start by reading in the datafile using the `readr` function from the `ti
 ```{r subway}
 subway = read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
     janitor::clean_names() %>% 
-    select( 
-      line, station_name, station_latitude, station_longitude, 
+    select(line, station_name, station_latitude, station_longitude, 
       starts_with("route"), entry, exit_only, vending, entrance_type, ada) %>% 
-    mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
-subway
+    mutate(entry = ifelse(entry == "YES", TRUE, FALSE)) %>% 
+    mutate(route8 = as.character(route8)) %>%  
+    mutate(route9 = as.character(route9)) %>% 
+    mutate(route10 = as.character(route10)) %>% 
+    mutate(route11 = as.character(route11)) 
 ```
 
+This dataset contains 20 columns and 1868 rows It has the 20 variables that we selected it to keep. We imported the file, used the `clean_names` function to do a quick clean. Then we selected what variables we wanted to keep. Some of the route variables were in dbl format instead of chr like most of the route variables so we changed that. And lastly we truned the entry variable from character into a logical variable. 
+
+This data is not tidy because the route variables should be converted from a wide to long format.
+
+We can use the following code to find the number of distinct stations:
+
+```{r}
+subway %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 465 distinct stations.
+
+We can use the following code to find the number of ADA compliant stations:
+
+```{r}
+subway %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 84 ADA compliant stations.
+
+We can use the following code to find the proportion of station entrances/exits without vending allow entrance:
+
+```{r}
+subway %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean
+```
+
+The proportion is 0.377.
 
 
+```{r}
+subway %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A") %>% 
+  select(station_name, line) %>% 
+  distinct
 
+subway %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 60 stations that serve the A train and of those, 17 are ADA compliant.
 
 
 ## Problem 2:
@@ -133,7 +191,5 @@ total = left_join(first, unemploy, by = c("year", "month"))
 The **snp** dataset has just 3 variables: the _close_ variable, untouched, and then the _month_ and _year_ that we created by separating the date. The **pols** dataset has the same _month_ and _year_ that we made like in the **snp** dataset. It also has many of the original variables, as well as a new variable called _president_ which was created logically based off the _prez_dem_ and _prez_gop_ variables. The **unemploy** dataset has also 3 variables, with the _month_ and _year_ variables made by separating the date and the _percent_unemploy_ variable made by the `pivot_longer` function. 
 
 The final dataset **total** has 822 observations (`nrow(total`) and 11 variables (`ncol(total`). We can find the range of years with the following code: `range(total$year)`, which is from 1947 to 2015. The key variables are _year_ and _month_ which was present in all 3 datafiles and was used to perform all the merges. 
-
-
 
 
