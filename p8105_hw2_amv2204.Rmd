@@ -31,6 +31,10 @@ subway
 ```
 
 
+
+
+
+
 ## Problem 2:
 
 Let's start by reading and cleaning the Mr. Trash Wheel and Professor Trash Wheel datasets. 
@@ -96,7 +100,7 @@ snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
     arrange(year, month) 
 ```
 
-Now tidy the unemployment data:
+Now tidy the unemployment file:
 
 ```{r unemploy}
 unemploy = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>% 
@@ -112,6 +116,19 @@ unemploy = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
     arrange(year, month)
 ```
 
+Now we will create a fully merged dataset.
+
+First we will merge `snp` into `pols`:
+
+```{r first_merge}
+first = left_join(pols, snp, by = c("year", "month"))
+```
+
+Then we will merge the `unemploy` file into this new merged `first` file:
+
+```{r total}
+total = left_join(first, unemploy, by = c("year", "month"))
+```
 
 
 
