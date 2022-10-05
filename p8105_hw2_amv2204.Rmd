@@ -77,7 +77,25 @@ pols = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
     select(-day, -prez_gop, -prez_dem)
 ```
 
+Clean up the snp file:
 
+```{r snp}
+snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>% 
+    janitor::clean_names() %>% 
+    separate(date, sep = "/", into = c("month", "day", "year")) %>% 
+    mutate(month = month.name[as.numeric(month)])
+```
+
+
+
+
+
+
+    mutate(century = case_when(year < 16 ~ 2000, TRUE ~ 1900)) %>% 
+
+
+  select(-day) %>% 
+  arrange(year, desc(month))
 
 
 
