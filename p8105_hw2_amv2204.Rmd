@@ -83,19 +83,16 @@ Clean up the snp file:
 snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>% 
     janitor::clean_names() %>% 
     separate(date, sep = "/", into = c("month", "day", "year")) %>% 
-    mutate(month = month.name[as.numeric(month)])
+    mutate(month = month.name[as.numeric(month)]) %>% 
+    mutate(century = case_when(year < 16 ~ 2000, TRUE ~ 1900)) %>% 
+    mutate(year = as.numeric(year)) %>% 
+    mutate(year = year + century) %>% 
+    select(year, month, close) %>% 
+    mutate(month = factor(month, levels = month.name)) %>% 
+    arrange(year, month) 
 ```
 
 
-
-
-
-
-    mutate(century = case_when(year < 16 ~ 2000, TRUE ~ 1900)) %>% 
-
-
-  select(-day) %>% 
-  arrange(year, desc(month))
 
 
 
