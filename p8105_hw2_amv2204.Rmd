@@ -77,7 +77,8 @@ pols = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
     mutate(year = as.numeric(year)) %>% 
     mutate(month = factor(month, levels = month.name)) %>% 
     mutate(president = case_when(prez_gop == 1 ~ "gop", TRUE ~ "dem")) %>% 
-    select(-day, -prez_gop, -prez_dem)
+    select(-day, -prez_gop, -prez_dem) %>% 
+    arrange(year, month)
 ```
 
 Clean up the snp file:
@@ -99,7 +100,16 @@ Now tidy the unemployment data:
 
 ```{r unemploy}
 unemploy = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>% 
-    janitor::clean_names()
+    janitor::clean_names() %>% 
+    pivot_longer(
+      jan:dec,
+      names_to = "month",
+      values_to = "percent_unemploy") %>% 
+    mutate(month = as.factor(month)) %>% 
+    mutate(month = month.name[as.numeric(month)]) %>% 
+    mutate(month = as.factor(month)) %>% 
+    mutate(month = factor(month, levels = month.name)) %>% 
+    arrange(year, month)
 ```
 
 
