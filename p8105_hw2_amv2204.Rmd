@@ -11,8 +11,8 @@ editor_options:
 
 We'll start by having a code chunk in the beginning that loads all the packages we will need for this homework.
 
-```{r prep}
-library (tidyverse)
+```{r prep, eval=FALSE}
+library(tidyverse)
 library(readxl)
 ```
 
@@ -21,7 +21,7 @@ library(readxl)
 
 We will start by reading in the datafile using the `readr` function from the `tidyverse` package and cleaning the data by using the `clean_names` function from the `janitor` package. We will also retain certain variables and convert the entry variable from a character variable to a logical variable. 
 
-```{r subway}
+```{r subway, eval=FALSE}
 subway = read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
     janitor::clean_names() %>% 
     select(line, station_name, station_latitude, station_longitude, 
@@ -39,7 +39,7 @@ This data is not tidy because the route variables should be converted from a wid
 
 We can use the following code to find the number of distinct stations:
 
-```{r}
+```{r, eval=FALSE}
 subway %>% 
   select(station_name, line) %>% 
   distinct
@@ -49,7 +49,7 @@ There are 465 distinct stations.
 
 We can use the following code to find the number of ADA compliant stations:
 
-```{r}
+```{r, eval=FALSE}
 subway %>% 
   filter(ada == TRUE) %>% 
   select(station_name, line) %>% 
@@ -60,7 +60,7 @@ There are 84 ADA compliant stations.
 
 We can use the following code to find the proportion of station entrances/exits without vending allow entrance:
 
-```{r}
+```{r, eval=FALSE}
 subway %>% 
   filter(vending == "NO") %>% 
   pull(entry) %>% 
@@ -70,7 +70,7 @@ subway %>%
 The proportion is 0.377.
 
 
-```{r}
+```{r, eval=FALSE}
 subway %>% 
   pivot_longer(
     route1:route11,
@@ -97,7 +97,7 @@ There are 60 stations that serve the A train and of those, 17 are ADA compliant.
 
 Let's start by reading and cleaning the Mr. Trash Wheel and Professor Trash Wheel datasets. 
 
-```{r Trashwheel}
+```{r Trashwheel, eval=FALSE}
 trash = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
@@ -106,7 +106,7 @@ trash = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Mr. Trash
 ```
 
 
-```{r Professor}
+```{r Professor, eval=FALSE}
 professor = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
@@ -115,12 +115,12 @@ professor = read_excel("./data/Trash_Wheel_Collection_Data.xlsx", sheet = "Profe
 
 Next we will combine both datasets into one dataset.
 
-```{r combo}
+```{r combo, eval=FALSE}
 combo = merge(x = trash, y = professor, all = TRUE) %>% 
   select(ID, everything())
 ```
 
-The new and combined dataset has 641 observations `nrow(combo)` and 15 variables `ncol(combo)`. All the variables exist both sets except for the _sports_balls_ variable; it came from the **trash** dataset. We can distinguish which observation is from which dataset by the _ID_ variable; an _ID_ value equal to A is for the **trash** dataset and an _ID_ value of B is for the **professor** dataset. 
+The new and combined dataset is a full merge and has 641 observations (`nrow(combo)`) and 15 variables (`ncol(combo)`). All the variables exist in both sets except for the _sports_balls_ variable; it came from the **trash** dataset. We can distinguish which observation is from which dataset by the _ID_ variable; an _ID_ value equal to A is for the **trash** dataset and an _ID_ value of B is for the **professor** dataset. 
 
 To find the total weight of trash collected by Professor Trash Wheel, we can use the following code: `sum(subset(combo, ID == "B")$weight_tons)`, which gives us the sum of the _weight_tons_ variable restricted to the observations from the **Professor** dataset, identified by _ID = B_. The answer is 190.12 tons.
 
@@ -131,7 +131,7 @@ To find the total number of sports balls collected by Mr. Trash Wheel in 2020, w
 
 Clean up the pols-month file:
 
-```{r pols}
+```{r pols, eval=FALSE}
 pols = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
     janitor::clean_names() %>% 
     separate(mon, sep = "-", into = c("year", "month", "day")) %>%
@@ -145,7 +145,7 @@ pols = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
 
 Clean up the snp file:
 
-```{r snp}
+```{r snp, eval=FALSE}
 snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>% 
     janitor::clean_names() %>% 
     separate(date, sep = "/", into = c("month", "day", "year")) %>% 
@@ -160,7 +160,7 @@ snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
 
 Now tidy the unemployment file:
 
-```{r unemploy}
+```{r unemploy, eval=FALSE}
 unemploy = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>% 
     janitor::clean_names() %>% 
     pivot_longer(
@@ -174,21 +174,23 @@ unemploy = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
     arrange(year, month)
 ```
 
-Now we will create a fully merged dataset.
+
+Now we will create a merged dataset in 2 steps.
+
 
 First we will merge `snp` into `pols`:
 
-```{r first_merge}
+```{r first_merge, eval=FALSE}
 first = left_join(pols, snp, by = c("year", "month"))
 ```
 
 Then we will merge the `unemploy` file into this new merged `first` file:
 
-```{r total}
+```{r total, eval=FALSE}
 total = left_join(first, unemploy, by = c("year", "month"))
 ```
 
-The **snp** dataset has just 3 variables: the _close_ variable, untouched, and then the _month_ and _year_ that we created by separating the date. The **pols** dataset has the same _month_ and _year_ that we made like in the **snp** dataset. It also has many of the original variables, as well as a new variable called _president_ which was created logically based off the _prez_dem_ and _prez_gop_ variables. The **unemploy** dataset has also 3 variables, with the _month_ and _year_ variables made by separating the date and the _percent_unemploy_ variable made by the `pivot_longer` function. 
+The **snp** dataset has just 3 variables: the _close_ variable, which was untouched, and then _month_ and _year_ that we created by separating the date. The **pols** dataset has the same _month_ and _year_ that we made like in the **snp** dataset. It also has many of the original variables, as well as a new variable called _president_ which was created logically based off the _prez_dem_ and _prez_gop_ variables. The **unemploy** dataset has also 3 variables, with the _month_ and _year_ variables made by separating the date and the _percent_unemploy_ variable made by the `pivot_longer` function. 
 
 The final dataset **total** has 822 observations (`nrow(total`) and 11 variables (`ncol(total`). We can find the range of years with the following code: `range(total$year)`, which is from 1947 to 2015. The key variables are _year_ and _month_ which was present in all 3 datafiles and was used to perform all the merges. 
 
